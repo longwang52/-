@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京二手房数据可视化大屏</title>
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script src="echarts-4.9.0/dist/echarts.min.js"></script>
+    <script src="echarts-4.9.0/map/js/china.js"></script>
+    <script src="echarts-4.9.0/map/js/province/beijing.js"></script>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- 左侧区域 -->
+    <div class="left-panel">
+        <!-- 基础数据展示 -->
+        <div class="card basic-stats">
+            <h2>北京二手房基础数据</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-houses">0</div>
+                    <div class="stat-label">房源总数(套)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-communities">0</div>
+                    <div class="stat-label">小区总数(个)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-area">0</div>
+                    <div class="stat-label">平均面积(㎡)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-price">0</div>
+                    <div class="stat-label">均价(万元/㎡)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 各区均价柱状图 -->
+        <div class="card">
+            <h2>北京各区二手房均价(万元/㎡)</h2>
+            <div id="district-price-chart" class="chart"></div>
+        </div>
+    </div>
+
+    <!-- 中间区域 -->
+    <div class="center-panel">
+        <!-- 北京市热力图 -->
+        <div class="card heatmap-card">
+            <h2>北京市二手房热力图</h2>
+            <div id="beijing-heatmap" class="chart"></div>
+        </div>
+
+        <!-- 各区房价波动图 -->
+        <div class="card volatility-card">
+            <h2>北京各区房价波动趋势</h2>
+            <div id="price-volatility-chart" class="chart"></div>
+        </div>
+    </div>
+
+    <!-- 右侧区域 -->
+    <div class="right-panel">
+        <!-- 各区房源分布柱状图 -->
+        <div class="card">
+            <h2>北京各区房源分布</h2>
+            <div id="district-distribution-chart" class="chart"></div>
+        </div>
+
+        <!-- 面积区间环形图 -->
+        <div class="card">
+            <h2>面积区间占比分析</h2>
+            <div id="area-range-chart" class="chart"></div>
+        </div>
+
+        <!-- 最新二手房信息滚动 -->
+        <div class="card">
+            <h2>最新二手房信息</h2>
+            <div id="community-scroll" class="scroll-container">
+                <ul id="community-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

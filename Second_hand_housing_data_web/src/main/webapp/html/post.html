@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="This page is used for bootstrap">
+  <meta name="teacher" content="Bootstrap practice">
+  <title>Bootstrap Practice</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    .pad-top-5 {
+      padding-top: 3rem;
+    }
+
+    .pad-bottom-5 {
+      padding-bottom: 3rem;
+    }
+
+    .margin-top-5 {
+      margin-top: 3rem;
+      ;
+    }
+
+    .margin-bottom-5 {
+      margin-bottom: 3rem;
+      ;
+    }
+  </style>
+
+  <link href="../css/blog.css" rel="stylesheet">
+  <link href="../css/index.css" rel="stylesheet">
+
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="../js/components/jquery-3.7.1.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件,也可以根据需要只加载单个插件。 -->
+  <script src="../js/components/bootstrap.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <header class="blog-header py-3">
+      <div class="row flex-nowrap justify-content-between align-items-center">
+        <div class="col-6 pt-1">
+          <span style="display: inline-block;"><a class="text-muted" href="../index.html">老师的微博</a>
+          </span>
+        </div>
+        <div class="col-2 text-center">
+        </div>
+
+      </div>
+    </header>
+
+    <div class="row">
+      <form>
+        <div class="form-group" style="min-width: 750px;">
+          <label for="exampleFormControlInput1">文章标题</label>
+          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlInput1">文章子标题</label>
+          <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">文章简介</label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">文章内容</label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="exampleFormControlFile1">上传图片</label>
+          <input type="file" class="form-control-file" id="exampleFormControlFile1">
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-2">发布</button>
+        <button type="button" class="btn btn-info mb-2" onclick="cancelPost()">取消</button>
+
+        <script>
+          function cancelPost() {
+            window.location.href = "index.html";
+          }
+        </script>
+      </form>
+    </div>
+  </div>
+
+  <footer class="blog-footer">
+    <p>以上信息仅供参考，请以实际情况为准.</p>
+    <p>
+      <a href="#">回到顶部</a>
+    </p>
+  </footer>
+
+
+
+</body>
+
+</html>

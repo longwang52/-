@@ -1,0 +1,193 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+body {
+    background-color: #0f1c3c;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* 仪表盘容器 */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    padding: 10px;
+    gap: 10px;
+}
+
+/* 面板通用样式 */
+.left-panel, .center-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.left-panel {
+    width: 25%; /* 修改宽度为25% */
+}
+
+.center-panel {
+    width: 45%; /* 修改宽度为45% */
+}
+
+.right-panel {
+    width: 30%;
+}
+
+/* 卡片样式 */
+.card {
+    background-color: #1a2b50;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 新增卡片高度比例设置 */
+.heatmap-card {
+    flex: 6; /* 60% 高度 */
+}
+
+.volatility-card {
+    flex: 4; /* 40% 高度 */
+}
+
+.card h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #5ab1ef;
+    text-align: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #2a3d6b;
+}
+
+/* 图表容器 */
+.chart {
+    flex: 1;
+    min-height: 0; /* 防止图表溢出 */
+}
+
+/* 基础数据展示样式 */
+.basic-stats {
+    min-height: 150px;
+}
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    flex: 1;
+}
+
+.stat-item {
+    flex: 1 0 calc(50% - 10px);
+    min-width: 100px;
+    background-color: #2a3d6b;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f8b551;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #a7b9d4;
+}
+
+/* 滚动信息样式 */
+.scroll-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+#community-list {
+    list-style: none;
+    position: absolute;
+    width: 100%;
+    animation: scroll 20s linear infinite;
+}
+
+#community-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #2a3d6b;
+    display: flex;
+    justify-content: space-between;
+}
+
+#community-list li span {
+    font-size: 12px;
+}
+
+.community-name {
+    color: #5ab1ef;
+    width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.community-district {
+    color: #a7b9d4;
+    width: 20%;
+    text-align: center;
+}
+
+.community-price {
+    color: #f8b551;
+    width: 20%;
+    text-align: right;
+}
+
+.community-year {
+    color: #a7b9d4;
+    width: 20%;
+    text-align: right;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .left-panel, .center-panel, .right-panel {
+        width: 100%;
+    }
+
+    .stats-container {
+        flex-wrap: nowrap;
+    }
+
+    /* 响应式布局中移除特定卡片高度 */
+    .heatmap-card, .volatility-card {
+        flex: 1;
+    }
+}

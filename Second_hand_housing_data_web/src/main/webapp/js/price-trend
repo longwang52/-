@@ -1,0 +1,255 @@
+$(document).ready(function() {
+    initPriceTrendChart();
+    initQuarterlyGrowthChart();
+    initDistrictGrowthChart();
+    initPriceAreaChart();
+});
+
+function initPriceTrendChart() {
+    const chart = echarts.init(document.getElementById('price-trend-chart'));
+
+    $.get('price/trend', function(data) {
+        const jsonData = JSON.parse(data);
+
+        const option = {
+            title: {
+                text: '北京市房产价格趋势(2018-2023)',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: jsonData.districts,
+                top: 30
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: jsonData.years
+            },
+            yAxis: {
+                type: 'value',
+                name: '价格(元/㎡)',
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            },
+            series: jsonData.districts.map(district => {
+                return {
+                    name: district,
+                    type: 'line',
+                    data: jsonData[district],
+                    smooth: true,
+                    lineStyle: {
+                        width: 3
+                    }
+                };
+            })
+        };
+
+        chart.setOption(option);
+    });
+
+    window.addEventListener('resize', function() {
+        chart.resize();
+    });
+}
+
+function initQuarterlyGrowthChart() {
+    const chart = echarts.init(document.getElementById('quarterly-growth-chart'));
+
+    $.get('price/quarterly', function(data) {
+        const jsonData = JSON.parse(data);
+
+        const option = {
+            title: {
+                text: '季度价格变化率',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: '{b}<br/>变化率: {c}%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: jsonData.quarters,
+                axisLabel: {
+                    interval: 0
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '变化率(%)',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [{
+                name: '季度变化',
+                type: 'bar',
+                data: jsonData.growths,
+                itemStyle: {
+                    color: function(params) {
+                        return params.value > 0 ? '#EE6666' : '#91CC75';
+                    }
+                },
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: function(params) {
+                        return params.value > 0 ? '+' + params.value + '%' : params.value + '%';
+                    }
+                }
+            }]
+        };
+
+        chart.setOption(option);
+    });
+
+    window.addEventListener('resize', function() {
+        chart.resize();
+    });
+}
+
+function initDistrictGrowthChart() {
+    const chart = echarts.init(document.getElementById('district-growth-chart'));
+
+    $.get('price/district-growth', function(data) {
+        const jsonData = JSON.parse(data);
+
+        const option = {
+            title: {
+                text: '区域价格增长对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: '{b}<br/>增长率: {c}%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: jsonData.districts,
+                axisLabel: {
+                    interval: 0,
+                    rotate: 30
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '增长率(%)',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [{
+                name: '5年增长率',
+                type: 'bar',
+                data: jsonData.growths,
+                itemStyle: {
+                    color: function(params) {
+                        const colorList = ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#73C0DE'];
+                        return colorList[params.dataIndex % colorList.length];
+                    }
+                },
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: '{c}%'
+                }
+            }]
+        };
+
+        chart.setOption(option);
+    });
+
+    window.addEventListener('resize', function() {
+        chart.resize();
+    });
+}
+
+function initPriceAreaChart() {
+    const chart = echarts.init(document.getElementById('price-area-chart'));
+
+    $.get('price/area', function(data) {
+        const jsonData = JSON.parse(data);
+
+        const option = {
+            title: {
+                text: '价格与面积关系趋势',
+                left: 'center'
+            },
+            tooltip: {
+                formatter: function(params) {
+                    return params.data[3] + '<br/>年份: ' + params.data[0] +
+                           '<br/>均价: ' + params.data[1] + '元/㎡<br/>面积: ' + params.data[2] + '㎡';
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '7%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                name: '年份',
+                data: jsonData.years
+            },
+            yAxis: {
+                type: 'value',
+                name: '均价(元/㎡)'
+            },
+            visualMap: {
+                show: false,
+                dimension: 2,
+                min: 40,
+                max: 200,
+                inRange: {
+                    symbolSize: [10, 50]
+                }
+            },
+            series: [{
+                name: '面积区间',
+                type: 'scatter',
+                symbolSize: function(data) {
+                    return Math.sqrt(data[4]) * 2;
+                },
+                data: jsonData.data,
+                itemStyle: {
+                    opacity: 0.8
+                }
+            }]
+        };
+
+        chart.setOption(option);
+    });
+
+    window.addEventListener('resize', function() {
+        chart.resize();
+    });
+}

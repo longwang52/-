@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京二手房数据可视化大屏</title>
+    <script src="echarts-4.9.0/dist/echarts.min.js"></script>
+    <script src="echarts-4.9.0/map/js/china.js"></script>
+    <script src="echarts-4.9.0/map/js/province/beijing.js"></script>
+    <style>
+        /* ======================= 全局样式 ======================= */
+        /* 应用全局重置样式 */
+        * {
+            margin: 0;                   /* 清除所有元素的外边距 */
+            padding: 0;                  /* 清除所有元素的内边距 */
+            box-sizing: border-box;      /* 使用border-box盒模型，包括内边距和边框在元素宽度内 */
+            font-family: "Microsoft YaHei", sans-serif; /* 设置全局字体，优先使用微软雅黑 */
+        }
+
+        /* 页面主体样式 */
+        body {
+            background-color: #0f1c3c;    /* 深蓝色背景 */
+            color: #fff;                 /* 白色文字 */
+            overflow: hidden;            /* 隐藏页面溢出内容 */
+        }
+
+        /* ======================= 仪表盘容器 ======================= */
+        /* 主容器布局 */
+        .dashboard-container {
+            display: flex;               /* 使用弹性布局 */
+            height: 100vh;               /* 占据整个视口高度 */
+            padding: 10px;               /* 内边距 */
+            gap: 10px;                   /* 子元素之间的间隔 */
+        }
+
+        /* ======================= 面板通用样式 ======================= */
+        /* 所有面板的通用样式 */
+        .left-panel, .center-panel, .right-panel {
+            display: flex;               /* 使用弹性布局 */
+            flex-direction: column;      /* 垂直排列子元素 */
+            gap: 10px;                   /* 子元素之间的间隔 */
+        }
+
+        /* 左侧面板宽度设置 */
+        .left-panel {
+            width: 20%;                  /* 占据25%宽度 */
+        }
+
+        /* 中间面板宽度设置 */
+        .center-panel {
+            width: 50%;                  /* 占据50%宽度 */
+        }
+
+        /* 右侧面板宽度设置 */
+        .right-panel {
+            width: 30%;                  /* 占据25%宽度 */
+        }
+
+        /* ======================= 卡片样式 ======================= */
+        /* 卡片通用样式 */
+        .card {
+            background-color: #1a2b50;   /* 卡片背景色 */
+            border-radius: 5px;          /* 圆角边框 */
+            padding: 15px;               /* 内边距 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 阴影效果 */
+            flex: 1;                     /* 自动填充可用空间 */
+            display: flex;               /* 使用弹性布局 */
+            flex-direction: column;      /* 垂直排列子元素 */
+        }
+
+        /* 卡片标题样式 */
+        .card h2 {
+            font-size: 16px;            /* 字体大小 */
+            margin-bottom: 10px;         /* 下边距 */
+            color: #5ab1ef;              /* 青蓝色标题 */
+            text-align: center;          /* 居中文本 */
+            padding-bottom: 5px;         /* 下内边距 */
+            border-bottom: 1px solid #2a3d6b; /* 底部边框 */
+        }
+
+        /* ======================= 图表容器 ======================= */
+        /* 图表区域样式 */
+        .chart {
+            flex: 1;                     /* 填充剩余空间 */
+            min-height: 0;               /* 防止Flexbox溢出问题 */
+        }
+
+        /* ======================= 面板高度分配 ======================= */
+        /* 中间面板的热力图卡片 */
+        .center-panel .card:nth-child(1) {
+            flex: 0 0 70%;               /* 固定高度占70% */
+        }
+
+        /* 中间面板的价格波动趋势图卡片 */
+        .center-panel .card:nth-child(2) {
+            flex: 0 0 30%;               /* 固定高度占30% */
+        }
+
+        /* 右侧面板的房源分布图卡片 */
+        .right-panel .card:nth-child(1) {
+            flex: 0 0 35%;               /* 固定高度占45% */
+        }
+
+        /* 右侧面板的面积区间环形图卡片 */
+        .right-panel .card:nth-child(2) {
+            flex: 0 0 35%;               /* 固定高度占30% */
+        }
+
+        /* 右侧面板的最新二手房信息卡片 */
+        .right-panel .card:nth-child(3) {
+            flex: 0 0 40%;               /* 固定高度占25% */
+        }
+
+        /* ======================= 基础数据展示 ======================= */
+        /* 基础统计区域样式 */
+        .basic-stats {
+            min-height: 150px;           /* 最小高度 */
+        }
+
+        /* 统计容器布局 */
+        .stats-container {
+            display: flex;               /* 使用弹性布局 */
+            flex-wrap: wrap;             /* 允许换行 */
+            justify-content: space-between; /* 两端对齐 */
+            gap: 10px;                   /* 子元素间隔 */
+            flex: 1;                     /* 填充剩余空间 */
+        }
+
+        /* 单个统计项样式 */
+        .stat-item {
+            flex: 1 0 calc(50% - 10px);  /* 每行两项，考虑间隔 */
+            min-width: 100px;            /* 最小宽度 */
+            background-color: #2a3d6b;   /* 背景色 */
+            border-radius: 5px;          /* 圆角 */
+            padding: 10px;               /* 内边距 */
+            display: flex;               /* 使用弹性布局 */
+            flex-direction: column;      /* 垂直排列 */
+            align-items: center;         /* 水平居中 */
+            justify-content: center;     /* 垂直居中 */
+        }
+
+        /* 统计值样式 */
+        .stat-value {
+            font-size: 24px;            /* 大号字体 */
+            font-weight: bold;           /* 粗体 */
+            color: #f8b551;              /* 金色文字 */
+            margin-bottom: 5px;          /* 下边距 */
+        }
+
+        /* 统计标签样式 */
+        .stat-label {
+            font-size: 12px;            /* 小号字体 */
+            color: #a7b9d4;              /* 浅蓝色文字 */
+        }
+
+        /* ======================= 滚动信息样式 ======================= */
+        /* 滚动容器样式 */
+        .scroll-container {
+            flex: 1;                     /* 填充剩余空间 */
+            overflow: hidden;            /* 隐藏溢出内容 */
+            position: relative;          /* 为绝对定位子元素提供定位上下文 */
+        }
+
+        /* 滚动列表样式 */
+        #community-list {
+            list-style: none;            /* 清除列表样式 */
+            position: absolute;          /* 绝对定位实现滚动 */
+            width: 100%;                 /* 占据全部宽度 */
+            animation: scroll 20s linear infinite; /* 应用滚动动画 */
+        }
+
+        /* 列表项样式 */
+        #community-list li {
+            padding: 8px 0;              /* 上下内边距 */
+            border-bottom: 1px dashed #2a3d6b; /* 底部虚线边框 */
+            display: flex;               /* 使用弹性布局 */
+            justify-content: space-between; /* 两端对齐 */
+        }
+
+        /* 列表内文字通用样式 */
+        #community-list li span {
+            font-size: 12px;            /* 小号字体 */
+        }
+
+        /* 小区名称样式 */
+        .community-name {
+            color: #5ab1ef;              /* 青蓝色文字 */
+            width: 40%;                  /* 占据40%宽度 */
+            overflow: hidden;            /* 隐藏溢出内容 */
+            text-overflow: ellipsis;     /* 溢出显示省略号 */
+            white-space: nowrap;         /* 禁止换行 */
+        }
+
+        /* 区域样式 */
+        .community-district {
+            color: #a7b9d4;              /* 浅蓝色文字 */
+            width: 20%;                  /* 占据20%宽度 */
+            text-align: center;          /* 居中文本 */
+        }
+
+        /* 价格样式 */
+        .community-price {
+            color: #f8b551;              /* 金色文字 */
+            width: 20%;                  /* 占据20%宽度 */
+            text-align: right;           /* 右对齐文本 */
+        }
+
+        /* 年份样式 */
+        .community-year {
+            color: #a7b9d4;              /* 浅蓝色文字 */
+            width: 20%;                  /* 占据20%宽度 */
+            text-align: right;           /* 右对齐文本 */
+        }
+
+        /* 滚动动画关键帧 */
+        @keyframes scroll {
+            0% {
+                transform: translateY(0); /* 初始位置 */
+            }
+            100% {
+                transform: translateY(-100%); /* 向上移动整个列表高度 */
+            }
+        }
+
+        /* ======================= 响应式调整 ======================= */
+        /* 在屏幕宽度小于1200px时的响应式布局 */
+        @media (max-width: 1200px) {
+            /* 切换为垂直布局 */
+            .dashboard-container {
+                flex-direction: column;  /* 垂直排列 */
+                height: auto;            /* 高度自适应 */
+            }
+
+            /* 所有面板宽度设为100% */
+            .left-panel, .center-panel, .right-panel {
+                width: 100%;             /* 占据全部宽度 */
+            }
+
+            /* 统计项禁止换行 */
+            .stats-container {
+                flex-wrap: nowrap;       /* 单行显示 */
+            }
+
+            /* 重置卡片高度 */
+            .center-panel .card,
+            .right-panel .card {
+                flex: 1 !important;      /* 高度自适应 */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- 左侧区域 -->
+    <div class="left-panel">
+        <!-- 基础数据展示 -->
+        <div class="card basic-stats">
+            <h2>北京二手房基础数据</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-houses">22,995</div>
+                    <div class="stat-label">房源总数(套)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-communities">4,371</div>
+                    <div class="stat-label">小区总数(个)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-area">113</div>
+                    <div class="stat-label">平均面积(㎡)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avg-price">5.4</div>
+                    <div class="stat-label">均价(万元/㎡)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 面积区间环形图 -->
+        <div class="card">
+            <h2>面积区间占比分析</h2>
+            <div id="area-range-chart" class="chart"></div>
+        </div>
+    </div>
+
+    <!-- 中间区域 -->
+    <div class="center-panel">
+        <!-- 北京市热力图 -->
+        <div class="card">
+            <h2>北京市二手房热力图</h2>
+            <div id="beijing-heatmap" class="chart"></div>
+        </div>
+
+        <!-- 各区房价波动图 -->
+        <div class="card">
+            <h2>北京各区房价波动趋势</h2>
+            <div id="price-volatility-chart" class="chart"></div>
+        </div>
+    </div>
+
+    <!-- 右侧区域 -->
+    <div class="right-panel">
+        <!-- 各区房源分布柱状图 -->
+        <div class="card">
+            <h2>北京各区房源分布</h2>
+            <div id="district-distribution-chart" class="chart"></div>
+        </div>
+
+        <!-- 北京各区二手房均价(万元/㎡) -->
+        <div class="card">
+            <h2>北京各区二手房均价(万元/㎡)</h2>
+            <div id="district-price-chart" class="chart"></div>
+        </div>
+
+        <!-- 最新二手房信息滚动 -->
+        <div class="card">
+            <h2>最新二手房信息</h2>
+            <div id="community-scroll" class="scroll-container">
+                <ul id="community-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 全局变量
+    let communityData = [];
+    let districtData = [];
+    let featureData = {};
+    let investmentData = [];
+    let priceTrendData = [];
+    let beijingMapRegistered = true; // 假设地图已注册
+
+    // 热力图默认数据
+    const defaultHeatmapData = [
+        { name: '朝阳区', value: 2907 },
+        { name: '丰台区', value: 2906 },
+        { name: '海淀区', value: 2877 },
+        { name: '昌平区', value: 2801 },
+        { name: '大兴区', value: 2103 },
+        { name: '西城区', value: 1872 },
+        { name: '通州区', value: 1596 },
+        { name: '东城区', value: 1432 },
+        { name: '房山区', value: 1431 },
+        { name: '顺义区', value: 1219 },
+        { name: '石景山区', value: 836 },
+        { name: '门头沟区', value: 479 },
+        { name: '延庆区', value: 468 },
+        { name: '平谷区', value: 41 },
+        { name: '怀柔区', value: 15 },
+        { name: '密云区', value: 12 }
+    ];
+
+    // 初始化函数
+    function initDashboard() {
+        // 设置基础数据
+        setBasicStats();
+
+        // 初始化图表
+        initDistrictPriceChart();
+        initBeijingHeatmap();
+        initPriceVolatilityChart();
+        initDistrictDistributionChart();
+        initAreaRangeChart();
+        initCommunityScroll();
+
+        // 模拟数据加载
+        setTimeout(() => {
+            districtData = [
+                { district: '西城区', avg_price_per_sqm: 13.2, house_count: 1872 },
+                { district: '东城区', avg_price_per_sqm: 12.8, house_count: 1432 },
+                { district: '海淀区', avg_price_per_sqm: 11.5, house_count: 2877 },
+                { district: '朝阳区', avg_price_per_sqm: 8.9, house_count: 2907 },
+                { district: '丰台区', avg_price_per_sqm: 7.2, house_count: 2906 },
+                { district: '石景山区', avg_price_per_sqm: 6.8, house_count: 836 },
+                { district: '通州区', avg_price_per_sqm: 5.6, house_count: 1596 },
+                { district: '昌平区', avg_price_per_sqm: 5.2, house_count: 2801 },
+                { district: '大兴区', avg_price_per_sqm: 4.9, house_count: 2103 },
+                { district: '顺义区', avg_price_per_sqm: 4.6, house_count: 1219 },
+                { district: '房山区', avg_price_per_sqm: 3.8, house_count: 1431 },
+                { district: '门头沟区', avg_price_per_sqm: 3.5, house_count: 479 },
+                { district: '延庆区', avg_price_per_sqm: 2.9, house_count: 468 },
+                { district: '怀柔区', avg_price_per_sqm: 2.7, house_count: 15 },
+                { district: '平谷区', avg_price_per_sqm: 2.5, house_count: 41 },
+                { district: '密云区', avg_price_per_sqm: 2.3, house_count: 12 }
+            ];
+
+            communityData = [
+                { community: '万柳书院', district: '海淀区', avgPricePerSqm: 18.2, avgBuildYear: 2015 },
+                { community: '北京壹号院', district: '朝阳区', avgPricePerSqm: 17.8, avgBuildYear: 2016 },
+                { community: '金茂府', district: '朝阳区', avgPricePerSqm: 15.6, avgBuildYear: 2014 },
+                { community: '朱雀门', district: '西城区', avgPricePerSqm: 14.9, avgBuildYear: 2008 },
+                { community: '融创香山壹号院', district: '海淀区', avgPricePerSqm: 14.5, avgBuildYear: 2019 },
+                { community: '紫玉山庄', district: '朝阳区', avgPricePerSqm: 14.2, avgBuildYear: 2005 },
+                { community: '钓鱼台七号院', district: '海淀区', avgPricePerSqm: 13.9, avgBuildYear: 2011 },
+                { community: '使馆壹号院', district: '东城区', avgPricePerSqm: 13.7, avgBuildYear: 2017 },
+                { community: '西山壹号院', district: '海淀区', avgPricePerSqm: 13.2, avgBuildYear: 2012 },
+                { community: '首创天禧', district: '朝阳区', avgPricePerSqm: 12.8, avgBuildYear: 2018 }
+            ];
+
+            featureData = {
+                areaRanges: ['50㎡以下', '50-70㎡', '70-90㎡', '90-110㎡', '110-130㎡', '130-150㎡', '150㎡以上'],
+                counts: [1250, 3250, 5200, 4800, 3900, 2800, 1795]
+            };
+
+            investmentData = [
+                { district: '海淀区', price_volatility: 1.8 },
+                { district: '西城区', price_volatility: 1.5 },
+                { district: '东城区', price_volatility: 1.4 },
+                { district: '朝阳区', price_volatility: 1.2 },
+                { district: '丰台区', price_volatility: 0.9 },
+                { district: '石景山区', price_volatility: 0.8 },
+                { district: '通州区', price_volatility: 0.7 },
+                { district: '昌平区', price_volatility: 0.6 },
+                { district: '大兴区', price_volatility: 0.5 }
+            ];
+
+            // 更新所有图表
+            updateDistrictCharts();
+            updatePriceVolatilityChart();
+            updateAreaRangeChart();
+            updateCommunityScroll();
+        }, 1000);
+    }
+
+    // 设置基础数据
+    function setBasicStats() {
+        document.getElementById('total-houses').textContent = '22,995';
+        document.getElementById('total-communities').textContent = '4,371';
+        document.getElementById('avg-area').textContent = '113';
+        document.getElementById('avg-price').textContent = '5.4';
+    }
+
+    // 初始化各区均价柱状图
+    function initDistrictPriceChart() {
+        const chartDom = document.getElementById('district-price-chart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: '{b}<br/>均价: {c} 万元/㎡'
+            },
+            grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+            xAxis: {
+                type: 'value',
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: { color: '#a7b9d4' },
+                splitLine: { lineStyle: { color: '#2a3d6b' } }
+            },
+            yAxis: {
+                type: 'category',
+                data: [],
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: { color: '#a7b9d4' }
+            },
+            series: [{
+                name: '均价',
+                type: 'bar',
+                data: [],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#2d8cf0' },
+                        { offset: 1, color: '#19be6b' }
+                    ])
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c} 万',
+                    color: '#fff'
+                }
+            }]
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => {
+            if (myChart && !myChart.isDisposed()) {
+                myChart.resize();
+            }
+        });
+        return myChart;
+    }
+
+    // 初始化北京热力图
+    function initBeijingHeatmap() {
+        const chartDom = document.getElementById('beijing-heatmap');
+        const myChart = echarts.init(chartDom);
+
+        // 基本配置
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>房源数量: {c}'
+            },
+            visualMap: {
+                min: 0,
+                max: 3000,
+                text: ['高', '低'],
+                realtime: false,
+                calculable: true,
+                inRange: {
+                    color: ['#00b050', '#ffd400', '#f47920', '#d71345']
+                },
+                textStyle: { color: '#a7b9d4' }
+            },
+            series: [{
+                name: '房源数量',
+                type: 'map',
+                map: 'china',
+                roam: true,
+                label: { show: true, color: '#fff' },
+                emphasis: {
+                    label: { color: '#fff' },
+                    itemStyle: { areaColor: '#ffd400' }
+                },
+                data: defaultHeatmapData
+            }]
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => {
+            if (myChart && !myChart.isDisposed()) {
+                myChart.resize();
+            }
+        });
+        return myChart;
+    }
+
+    // 初始化价格波动图
+    function initPriceVolatilityChart() {
+        const chartDom = document.getElementById('price-volatility-chart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: { backgroundColor: '#6a7985' }
+                }
+            },
+            legend: {
+                data: [],
+                textStyle: { color: '#a7b9d4' },
+                top: '0%'
+            },
+            grid: { left: '3%', right: '4%', bottom: '3%', top: '15%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: [],
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: { color: '#a7b9d4' }
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: {
+                    color: '#a7b9d4',
+                    formatter: '{value}%'
+                },
+                splitLine: { lineStyle: { color: '#2a3d6b' } }
+            },
+            series: []
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => {
+            if (myChart && !myChart.isDisposed()) {
+                myChart.resize();
+            }
+        });
+        return myChart;
+    }
+
+    // 初始化各区房源分布图
+    function initDistrictDistributionChart() {
+        const chartDom = document.getElementById('district-distribution-chart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: '{b}<br/>房源数量: {c}'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: [],
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: {
+                    color: '#a7b9d4',
+                    interval: 0,
+                    rotate: 45,
+                    margin: 15,
+                    formatter: function(value) {
+                        return value.length > 3 ? value.substring(0, 2) : value;
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '房源数量',
+                nameTextStyle: { color: '#a7b9d4' },
+                axisLine: { lineStyle: { color: '#2a3d6b' } },
+                axisLabel: { color: '#a7b9d4' },
+                splitLine: { lineStyle: { color: '#2a3d6b' } }
+            },
+            series: [{
+                name: '房源数量',
+                type: 'bar',
+                barWidth: '60%',
+                data: [],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#f8b551' },
+                        { offset: 1, color: '#f2711a' }
+                    ])
+                },
+                label: {
+                    show: true,
+                    position: 'top',
+                    color: '#f8b551',
+                    formatter: '{c}'
+                }
+            }]
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => {
+            if (myChart && !myChart.isDisposed()) {
+                myChart.resize();
+            }
+        });
+        return myChart;
+    }
+
+    // 初始化面积区间环形图
+    function initAreaRangeChart() {
+        const chartDom = document.getElementById('area-range-chart');
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c} ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                right: 10,
+                top: 'center',
+                textStyle: { color: '#a7b9d4' }
+            },
+            series: [{
+                name: '面积区间',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#1a2b50',
+                    borderWidth: 2
+                },
+                label: { show: false, position: 'center' },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '18',
+                        fontWeight: 'bold',
+                        color: '#fff'
+                    }
+                },
+                labelLine: { show: false },
+                data: []
+            }]
+        };
+
+        myChart.setOption(option);
+        window.addEventListener('resize', () => {
+            if (myChart && !myChart.isDisposed()) {
+                myChart.resize();
+            }
+        });
+        return myChart;
+    }
+
+    // 初始化小区信息滚动
+    function initCommunityScroll() {
+        // 初始为空，数据加载后更新
+    }
+
+    // 更新各区均价图表
+    function updateDistrictCharts() {
+        // 更新各区均价柱状图
+        const districtPriceChart = echarts.getInstanceByDom(document.getElementById('district-price-chart'));
+        if (districtPriceChart && !districtPriceChart.isDisposed()) {
+            const sortedData = [...districtData].sort((a, b) => b.avg_price_per_sqm - a.avg_price_per_sqm);
+
+            districtPriceChart.setOption({
+                yAxis: {
+                    data: sortedData.map(item => item.district)
+                },
+                series: [{
+                    data: sortedData.map(item => item.avg_price_per_sqm)
+                }]
+            });
+        }
+
+        // 更新北京热力图
+        const beijingHeatmap = echarts.getInstanceByDom(document.getElementById('beijing-heatmap'));
+        if (beijingHeatmap && !beijingHeatmap.isDisposed()) {
+            const heatmapData = districtData.map(item => ({
+                name: item.district,
+                value: item.house_count
+            }));
+
+            beijingHeatmap.setOption({
+                series: [{
+                    data: heatmapData
+                }]
+            });
+        }
+
+        // 更新各区房源分布图
+        const districtDistributionChart = echarts.getInstanceByDom(document.getElementById('district-distribution-chart'));
+        if (districtDistributionChart && !districtDistributionChart.isDisposed()) {
+            const sortedData = [...districtData].sort((a, b) => b.house_count - a.house_count);
+
+            districtDistributionChart.setOption({
+                xAxis: {
+                    data: sortedData.map(item => item.district)
+                },
+                series: [{
+                    data: sortedData.map(item => item.house_count)
+                }]
+            });
+        }
+    }
+
+    // 更新价格波动图
+    function updatePriceVolatilityChart() {
+        if (investmentData.length === 0) return;
+
+        // 按区域分组计算平均波动率
+        const districtMap = {};
+        investmentData.forEach(item => {
+            const district = item.district;
+            if (!districtMap[district]) {
+                districtMap[district] = { count: 0, totalVolatility: 0 };
+            }
+            districtMap[district].count++;
+            districtMap[district].totalVolatility += item.price_volatility;
+        });
+
+        const districts = Object.keys(districtMap);
+        const avgVolatility = districts.map(district =>
+            (districtMap[district].totalVolatility / districtMap[district].count).toFixed(2)
+        );
+
+        const priceVolatilityChart = echarts.getInstanceByDom(document.getElementById('price-volatility-chart'));
+        if (priceVolatilityChart && !priceVolatilityChart.isDisposed()) {
+            priceVolatilityChart.setOption({
+                legend: {
+                    data: ['平均价格波动率']
+                },
+                xAxis: {
+                    data: districts
+                },
+                series: [{
+                    name: '平均价格波动率',
+                    type: 'line',
+                    smooth: true,
+                    lineStyle: { width: 3, color: '#f8b551' },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(248, 181, 81, 0.5)' },
+                            { offset: 1, color: 'rgba(248, 181, 81, 0.1)' }
+                        ])
+                    },
+                    emphasis: { focus: 'series' },
+                    data: avgVolatility,
+                    markPoint: {
+                        data: [
+                            { type: 'max', name: '最大值' },
+                            { type: 'min', name: '最小值' }
+                        ]
+                    },
+                    markLine: { data: [{ type: 'average', name: '平均值' }] }
+                }]
+            });
+        }
+    }
+
+    // 更新面积区间环形图
+    function updateAreaRangeChart() {
+        if (!featureData.areaRanges || featureData.areaRanges.length === 0) return;
+
+        // 准备环形图数据
+        const pieData = featureData.areaRanges.map((range, index) => ({
+            value: featureData.counts[index],
+            name: range
+        }));
+
+        const areaRangeChart = echarts.getInstanceByDom(document.getElementById('area-range-chart'));
+        if (areaRangeChart && !areaRangeChart.isDisposed()) {
+            areaRangeChart.setOption({
+                series: [{
+                    data: pieData
+                }]
+            });
+        }
+    }
+
+    // 更新小区信息滚动
+    function updateCommunityScroll() {
+        if (communityData.length === 0) return;
+
+        const container = document.getElementById('community-list');
+        container.innerHTML = '';
+
+        // 添加列表项
+        communityData.forEach(community => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span class="community-name">${community.community}</span>
+                <span class="community-district">${community.district}</span>
+                <span class="community-price">${community.avgPricePerSqm}万</span>
+                <span class="community-year">${community.avgBuildYear}</span>
+            `;
+            container.appendChild(li);
+        });
+
+        // 克隆列表项以实现无缝滚动
+        const items = container.querySelectorAll('li');
+        items.forEach(item => {
+            const clone = item.cloneNode(true);
+            container.appendChild(clone);
+        });
+    }
+
+    // 页面加载完成后初始化仪表盘
+    document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

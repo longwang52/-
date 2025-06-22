@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>我的博客</title>
+    <link rel="shortcut icon" href="../img/favicon.ico" />
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/login.css" rel="stylesheet">
+    <script src="../js/components/jquery-3.7.1.js"></script>
+    <script src="../js/components/bootstrap.min.js"></script>
+
+    <script>
+        $(function(){
+            //onclick="toBaidu()"
+        })
+
+        function loginEvent(){
+            window.location.href= "index.html";
+        }
+    </script>
+</head>
+
+<body>
+    <div id="main">
+
+        <div class="container wrap">
+            <div class="row justify-content-md-center">
+
+                <div style="min-width: 450px;border: 1px solid darkgray; padding: 50px;">
+                    <form>
+                        <div class="form-group" style="text-align: -webkit-left;">
+                            <label for="username">用户名：</label>
+                            <input type="text" class="form-control" id="username" aria-describedby="usernameHelp"
+                                placeholder="输入用户名">
+                            <small id="emailHelp" class="form-text text-muted" style="display: none;">We'll never share
+                                your email with anyone else.</small>
+                        </div>
+                        <div class="form-group" style="text-align: -webkit-left;">
+                            <label for="exampleInputPassword1">密码：</label>
+                            <input type="password" class="form-control" id="userpwd" placeholder="输入密码">
+                        </div>
+
+                        <div class="form-group" style="text-align: -webkit-left;">
+                            <button type="button" class="btn btn-primary" style="width: 100%;" onclick="loginEvent()">登录</button>
+                        </div>
+
+
+                    </form>
+                    <!-- <a href="/Blog/index.jsp" style="float: left;">注册</a> -->
+                    <!-- Button trigger modal -->
+
+                    <button type="button" style="float: left;" class="btn btn-link" data-toggle="modal"
+                        data-target="#exampleModalCenter">
+                        注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalCenterTitle">注册</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                      <label for="recipient-name" class="col-form-label">姓名:</label>
+                      <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                      <label for="message-text" class="col-form-label">性别:</label>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="inlineCheckbox1" value="option1">
+                        <label class="form-check-label" for="inlineCheckbox1">男</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="inlineCheckbox2" value="option2">
+                        <label class="form-check-label" for="inlineCheckbox2">女</label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">密码:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                      </div>
+                      <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">确认密码:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                      </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

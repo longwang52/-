@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="This page is used for bootstrap">
+  <meta name="teacher" content="Bootstrap practice">
+  <title>微博</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    .pad-top-5 {
+      padding-top: 3rem;
+    }
+
+    .pad-bottom-5 {
+      padding-bottom: 3rem;
+    }
+
+    .margin-top-5 {
+      margin-top: 3rem;
+      ;
+    }
+
+    .margin-bottom-5 {
+      margin-bottom: 3rem;
+      ;
+    }
+  </style>
+
+  <link href="../css/blog.css" rel="stylesheet">
+  <link href="../css/index.css" rel="stylesheet">
+
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="../js/components/jquery-3.7.1.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件,也可以根据需要只加载单个插件。 -->
+  <script src="../js/components/bootstrap.js"></script>
+  <script src="../js/import.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <header class="blog-header py-3">
+      <div class="row flex-nowrap justify-content-between align-items-center">
+        <div class="col-6 pt-1">
+          <span style="display: inline-block;"><a class="text-muted"
+              href="https://www.w3school.com.cn/css/index.asp">老师的微博</a>
+          </span>
+        </div>
+        <div class="col-2 text-center">
+        </div>
+        <div class="col-4 d-flex justify-content-end align-items-center">
+           <button type="button" style="float: left;margin-left: -10px;color: #6c757d;" class="btn btn-link"
+            data-toggle="modal" data-target="#exampleModalCenter" onclick="post()" >
+            发布
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 导航 -->
+    <div class="nav-scroller py-1 mb-2">
+      <nav class="nav d-flex justify-content-between">
+        <a class="p-2 text-muted" href="../index.html">首页</a>
+        <a class="p-2 text-muted" href="#">微博</a>
+        <a class="p-2 text-muted" href="../myblog.html">我的分享</a>
+        <a class="p-2 text-muted" href="aboutme.html">个人信息</a>
+
+      </nav>
+    </div>
+
+    <!-- 主要内容展示 -->
+    <div class="jumbotron p-4 p-md-5 text-white rounded bg-dark">
+      <div class="col-md-6 px-0">
+        <h1 class="display-4 font-italic">热点文章推荐</h1>
+        <p class="lead my-3">Multiple lines of text that form the lede, informing new readers quickly and efficiently
+          about what’s most interesting in this post’s contents.</p>
+        <p class="lead mb-0"><a href="#" class="text-white font-weight-bold">Continue reading...</a></p>
+      </div>
+    </div>
+
+    <!-- 栅格列表 -->
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="blog-footer">
+    <p>以上信息仅供参考，请以实际情况为准.</p>
+    <p>
+      <a href="#">回到顶部</a>
+    </p>
+  </footer>
+
+
+
+</body>
+
+</html>
